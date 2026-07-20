@@ -1,0 +1,7 @@
+.env
+backend/dev_data/
+__pycache__/
+*.pyc
+
+# Secretos personales (códigos de recuperación MFA, etc.) — NUNCA subir a git
+codigos seguridad*.txt

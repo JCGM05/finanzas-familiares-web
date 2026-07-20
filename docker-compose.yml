@@ -1,0 +1,26 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-finanzas}
+      POSTGRES_USER: ${POSTGRES_USER:-finanzas}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?define POSTGRES_PASSWORD en .env}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    # El backend llega a la BD por la red interna de Docker (host "db"), NO hace
+    # falta publicar el puerto. Lo atamos a 127.0.0.1 para poder administrarla
+    # desde el propio equipo (psql/pgAdmin) sin exponerla a la red local.
+    # Para máximo aislamiento, comenta estas dos líneas y usa solo la red interna.
+    ports:
+      - "127.0.0.1:5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-finanzas}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # backend y frontend se añaden en capas posteriores, una vez probados por separado
+
+volumes:
+  db_data:
